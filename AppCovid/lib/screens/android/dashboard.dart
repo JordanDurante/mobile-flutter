@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/android/login_screen.dart';
+import 'package:flutter_application_1/screens/android/paciente/paciente_list.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
@@ -24,23 +25,31 @@ class Dashboard extends StatelessWidget {
         ],
       ),
       
-      body: Column(
-        children: <Widget>[
-          _msgSuperiorTXT(),
-          _imgCentral(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              _ItemElemento('PACIENTES', Icons.accessibility_new, (){
-                debugPrint('pacientes');
-              }),
-              _ItemElemento('RESULTADOS', Icons.check_circle_outline, (){
-                debugPrint('resultados');
-              }),
-            ],
-          )
-          
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            _msgSuperiorTXT(),
+            _imgCentral(),
+            Container(
+              height: 120,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: <Widget>[
+                  _ItemElemento('PACIENTES', Icons.accessibility_new, (){
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => PacienteList()
+                    ));
+                  }),
+                  _ItemElemento('RESULTADOS', Icons.check_circle_outline, (){
+                    debugPrint('resultados');
+                  }),
+                ],
+
+              ),
+            )
+            
+          ],
+        ),
       ),
     );
   }
