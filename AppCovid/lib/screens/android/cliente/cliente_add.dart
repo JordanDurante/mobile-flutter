@@ -1,58 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/database/paciente_dao.dart';
-import 'package:flutter_application_1/model/paciente.dart';
+import 'package:flutter_application_1/database/cliente_dao.dart';
+import 'package:flutter_application_1/model/cliente.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-class PacienteScreen extends StatefulWidget {
+class ClienteScreen extends StatefulWidget { 
+  final Cliente? cliente;
 
-  final Paciente? paciente;
-
-  const PacienteScreen({Key? key, this.paciente}) : super(key: key);
+  const ClienteScreen({Key? key, this.cliente}) : super(key: key);
 
   @override
-  State<PacienteScreen> createState() => _PacienteScreenState();
+  State<ClienteScreen> createState() => _ClienteScreenState();
 }
 
-class _PacienteScreenState extends State<PacienteScreen> {
+class _ClienteScreenState extends State<ClienteScreen> {
   final TextEditingController _nomeController = TextEditingController();
-
-  final TextEditingController _emailController = TextEditingController();
-
-  final TextEditingController _cartaoController = TextEditingController();
-
+  final TextEditingController _telefoneController = TextEditingController();
   final TextEditingController _idadeController = TextEditingController();
-
-  final TextEditingController _senhaController = TextEditingController();
-
+  final TextEditingController _alturaController = TextEditingController();
+  final TextEditingController _pesoController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
-  late Paciente _paciente;
-
+  late Cliente _cliente;
   bool _isUpdate = false;
 
   @override
   Widget build(BuildContext context) {
-
-    debugPrint(_isUpdate.toString());
-
-    if (widget.paciente != null && _isUpdate == false) {
-      _paciente = widget.paciente!;
-      _fotoPerfil = _paciente.foto;
-      _nomeController.text = _paciente.nome;
-      _emailController.text = _paciente.email;
-      _cartaoController.text = _paciente.cartao;
-      _idadeController.text = _paciente.idade.toString();
-      _senhaController.text = _paciente.senha;
+    if (widget.cliente != null && _isUpdate == false) {
+      _cliente = widget.cliente!;
+      _fotoPerfil = _cliente.foto;
+      _nomeController.text = _cliente.nome;
+      _telefoneController.text = _cliente.telefone;
+      _idadeController.text = _cliente.idade.toString();
+      _alturaController.text = _cliente.altura.toString();
+      _pesoController.text = _cliente.peso.toString();
       _isUpdate = true;
-      
     }
-
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('ADD PACIENTE'),
+        title: Text('Cadastrar Cliente'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -71,67 +58,66 @@ class _PacienteScreenState extends State<PacienteScreen> {
                   },
                   controller: _nomeController,
                   decoration: InputDecoration(
-                    labelText: "NOME"
+                    labelText: "NOME",
                   ),
                   style: TextStyle(fontSize: 20),
                 ),
                 TextFormField(
-                  validator: (value){
-                    if(value == null || value.isEmpty){
-                      return 'Email obrigatório';
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Telefone obrigatório';
                     }
                     return null;
-                  } ,
-                  controller: _emailController,
+                  },
+                  controller: _telefoneController,
                   decoration: InputDecoration(
-                    labelText: "EMAIL"
-                  ),
-                  style: TextStyle(fontSize: 20),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                TextFormField(
-                  validator: (value){
-                    if(value == null || value.isEmpty){
-                      return 'Cartão SUS obrigatório';
-                    }
-                    return null;
-                  } ,
-                  controller: _cartaoController,
-                  decoration: InputDecoration(
-                    labelText: "CARTÂO SUS"
+                    labelText: "TELEFONE",
                   ),
                   style: TextStyle(fontSize: 20),
                 ),
                 TextFormField(
-                  validator: (value){
-                    if(value == null || value.isEmpty){
-                      return 'Idade obrigatório';
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Idade obrigatória';
                     }
                     return null;
-                  } ,
+                  },
                   controller: _idadeController,
                   decoration: InputDecoration(
-                    labelText: "IDADE"
+                    labelText: "IDADE",
                   ),
                   style: TextStyle(fontSize: 20),
                   keyboardType: TextInputType.number,
                 ),
                 TextFormField(
-                  validator: (value){
-                    if(value == null || value.isEmpty){
-                      return 'Senha obrigatório';
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Altura obrigatória';
                     }
                     return null;
-                  } ,
-                  controller: _senhaController,
+                  },
+                  controller: _alturaController,
                   decoration: InputDecoration(
-                    labelText: "SENHA"
+                    labelText: "ALTURA",
                   ),
                   style: TextStyle(fontSize: 20),
-                  obscureText: true,
+                  keyboardType: TextInputType.number,
+                ),
+                TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Peso obrigatório';
+                    }
+                    return null;
+                  },
+                  controller: _pesoController,
+                  decoration: InputDecoration(
+                    labelText: "PESO",
+                  ),
+                  style: TextStyle(fontSize: 20),
+                  keyboardType: TextInputType.number,
                 ),
                 Container(
-                  // color: Colors.red,
                   padding: EdgeInsets.symmetric(vertical: 20.0),
                   width: double.infinity,
                   child: ElevatedButton(
@@ -145,41 +131,41 @@ class _PacienteScreenState extends State<PacienteScreen> {
                     ),
                     onPressed: () {
                       int? idade = int.tryParse(_idadeController.text);
-                      if (idade == null) {
-                        debugPrint('Idade inválida');
+                      double? altura = double.tryParse(_alturaController.text);
+                      double? peso = double.tryParse(_pesoController.text);
+
+                      if (idade == null || altura == null || peso == null) {
+                        debugPrint('Valores inválidos');
                         return;
                       }
-                      if(_formKey.currentState?.validate() ?? false){
-                        Paciente p = Paciente(
-                          widget.paciente?.id ?? 0,
+
+                      if (_formKey.currentState?.validate() ?? false) {
+                        Cliente c = Cliente(
+                          widget.cliente?.id ?? 0,
                           _nomeController.text,
-                          _emailController.text,
-                          _cartaoController.text,
+                          _telefoneController.text,
                           idade,
-                          _senhaController.text,
-                          _fotoPerfil
+                          altura,
+                          peso,
+                          _fotoPerfil,
                         );
-                        if(widget.paciente != null){
-                          PacienteDAO().atualizar(p);
+
+                        if (widget.cliente != null) {
+                          ClienteDAO().atualizar(c);
                           Navigator.of(context).pop();
-                        }else{
-                          PacienteDAO.adicionar(p);
+                        } else {
+                          ClienteDAO.adicionar(c);
                           Navigator.of(context).pop();
                         }
-                        
-                      }else{
+                      } else {
                         debugPrint('Formulário inválido');
                       }
                     },
-                    child: Text('Salvar', 
-                      style: TextStyle(
-                        color: Colors.white, 
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold
-                        ),
-                    ),
+                    child: Text('Salvar',
+                        style: TextStyle(
+                            color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                   ),
-                )
+                ),
               ],
             ),
           ),

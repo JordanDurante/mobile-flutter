@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/android/login_screen.dart';
-import 'package:flutter_application_1/screens/android/paciente/paciente_list.dart';
+import 'package:flutter_application_1/screens/android/cliente/cliente_list.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
@@ -35,14 +35,11 @@ class Dashboard extends StatelessWidget {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: <Widget>[
-                  _ItemElemento('PACIENTES', Icons.accessibility_new, (){
+                  _ItemElemento('CLIENTES', Icons.accessibility_new, (){
                     Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => PacienteList()
+                      builder: (context) => ClienteList()
                     ));
-                  }),
-                  _ItemElemento('RESULTADOS', Icons.check_circle_outline, (){
-                    debugPrint('resultados');
-                  }),
+                  })
                 ],
 
               ),
@@ -63,10 +60,9 @@ class Dashboard extends StatelessWidget {
 
   Widget _msgSuperiorTXT() {
     return Container(
-      // color: Colors.blue,
       alignment: Alignment.topRight,
       padding: const EdgeInsets.all(8.0),
-      child: Text('Checklist para Covid-19', style: TextStyle(
+      child: Text('Controle de Clientes(Academia do Betão)', style: TextStyle(
         color: Colors.black,
         fontFamily: 'OpenSans',
         fontWeight: FontWeight.bold,
@@ -97,7 +93,6 @@ class _ItemElemento extends StatelessWidget {
         child: InkWell(
           onTap: onClick,
           child: Container(
-            // color: Colors.green,
             width: 150,
             height: 80,
             padding: EdgeInsets.all(8.0),
