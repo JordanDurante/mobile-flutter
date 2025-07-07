@@ -6,8 +6,21 @@ class Paciente {
   String _cartao;
   int _idade;
   String _senha;
+  String _foto;
   
-  Paciente(this._id, this._nome, this._email, this._cartao, this._idade, this._senha);
+  Paciente(this._id, this._nome, this._email, this._cartao, this._idade, this._senha, this._foto);
+
+  Map<String, dynamic> toMap(){
+    return{
+    //'id' : _id,
+    'nome' : _nome,
+    'email' : _email,
+    'cartao' : _cartao,
+    'idade' : _idade,
+    'senha' : _senha,
+    'foto' : _foto
+    };
+  }
 
   int get id{
     return _id;
@@ -33,7 +46,8 @@ class Paciente {
     return _senha;
   }
 
-
-
+  String get foto{
+    return _foto;
+  }
 
 }

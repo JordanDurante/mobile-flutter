@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/database/paciente_dao.dart';
 import 'package:flutter_application_1/model/paciente.dart';
+import 'package:flutter_application_1/screens/android/paciente/paciente_add.dart';
+import 'package:random_color/random_color.dart';
 
 class PacienteList  extends StatefulWidget{
   @override
@@ -32,13 +36,7 @@ class _PacienteListState extends State<PacienteList> {
           Expanded(
             child: Container(
               // color: Colors.green,
-              child: ListView.builder(
-                itemCount: _pacientes.length,
-                itemBuilder: (context, index){
-                  final Paciente p = _pacientes[index];
-                  return ItemPaciente(p);
-                }
-              ),
+              child: _futureBuilderPaciente(),
             ),
           ),
           
@@ -46,32 +44,150 @@ class _PacienteListState extends State<PacienteList> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Paciente p = Paciente(4, 'Andressa', 'andressa@hotmail.com', 'txt123', 30, 'testesenha');
-          PacienteDAO.adicionar(p);
-          setState(() {
-            debugPrint('adicionar .....');
-            
-          });
-        },
-        child: Icon(Icons.add),
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => PacienteScreen(paciente: null)
+            ))
+            .then((value) {
+              setState(() {
+                debugPrint('adicionar .....');
+              });
+            }); 
+          },
+          child: Icon(Icons.add),
         ),
     );
   }
+
+
+  Widget _futureBuilderPaciente() {
+    return FutureBuilder<List<Paciente>>(
+      initialData: const [],
+      future: PacienteDAO().getPacientes(),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+          case ConnectionState.active:
+          case ConnectionState.waiting:
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Carregando...'),
+                ],
+              ),
+            );
+          case ConnectionState.done:
+            if (snapshot.hasError) {
+              return Center(child: Text('Erro: ${snapshot.error}'));
+            }
+
+            final List<Paciente> pacientes = snapshot.data ?? [];
+
+            if (pacientes.isEmpty) {
+              return Center(child: Text('Nenhum paciente encontrado.'));
+            }
+
+            return ListView.builder(
+              itemCount: pacientes.length,
+              itemBuilder: (context, index) {
+                final Paciente p = pacientes[index];
+                return ItemPaciente(
+                  p,
+                  onClick: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(
+                            builder: (context) => PacienteScreen(paciente: p)))
+                        .then((value) {
+                      setState(() {
+                        debugPrint('..voltou do editar');
+                      });
+                    });
+                  },
+                );
+              },
+            );
+        }
+      },
+    );
+  }
+
+
+  Widget _oldListPacientes(){
+
+    List<Paciente> _pacientes = PacienteDAO.listarPacientes;
+    return ListView.builder(
+                  itemCount: _pacientes.length,
+                  itemBuilder: (context, index){
+                    final Paciente p = _pacientes[index];
+                    return ItemPaciente(p, onClick: (){
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => PacienteScreen(paciente: p))
+                        ).then((value){
+                          setState(() {
+                            debugPrint('voltou do editar');
+                          });
+                        });
+                    },);
+                  }
+                );
+  }
 }
+
 
 class ItemPaciente extends StatelessWidget {
 
   final Paciente _paciente;
-  ItemPaciente(this._paciente);
+  final Function onClick;
+
+  ItemPaciente(this._paciente, {required this.onClick});
+
+  Widget _avatarAntigo(){
+    return CircleAvatar(
+            backgroundImage: AssetImage('imagens/avatar.png'),
+          );
+  }
+
+  Widget _avatarFotoPerfil() {
+    final String foto = _paciente.foto;
+
+    final bool temFotoValida = foto.isNotEmpty && File(foto).existsSync();
+
+    final RandomColor corRandom = RandomColor();
+    final Color cor = corRandom.randomColor(
+      colorBrightness: ColorBrightness.light,
+    );
+
+    return CircleAvatar(
+      backgroundColor: cor,
+      foregroundColor: Colors.white,
+      radius: 22.0,
+      backgroundImage: temFotoValida
+          ? FileImage(File(foto))
+          : null,
+      child: temFotoValida
+          ? null
+          : Text(
+              _paciente.nome.isNotEmpty
+                  ? _paciente.nome.substring(0, 1).toUpperCase()
+                  : '?',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0,
+                color: Colors.white ,
+              ),
+            ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         ListTile(
-          leading: CircleAvatar(
-            backgroundImage: AssetImage('imagens/avatar.png'),
-          ),
+          onTap: () => onClick(),
+          leading: _avatarFotoPerfil(), 
           title: Text(_paciente.nome, 
             style: TextStyle(fontSize: 15),
             ),
@@ -98,10 +214,6 @@ class ItemPaciente extends StatelessWidget {
       },
       itemBuilder: (BuildContext context) => <PopupMenuItem<ItensMenuListPaciente>>[
         const PopupMenuItem(
-          value: ItensMenuListPaciente.editar,
-          child: Text('Editar'),
-        ),
-        const PopupMenuItem(
           value: ItensMenuListPaciente.resultados,
           child: Text('Resultados'),
         ),
@@ -116,4 +228,4 @@ class ItemPaciente extends StatelessWidget {
 
 }
 
-enum ItensMenuListPaciente {editar, resultados, novoCecklist}
+enum ItensMenuListPaciente {resultados, novoCecklist}
