@@ -15,7 +15,7 @@ class ClienteDAO {
   static const String _col_foto = 'foto';
 
   static const String sqlTabelaCliente = 'CREATE TABLE $_nomeTabela ('
-      '$_col_id INTEGER PRIMARY KEY, '
+      '$_col_id INTEGER PRIMARY KEY AUTOINCREMENT, '
       '$_col_nome TEXT, '
       '$_col_telefone TEXT, '
       '$_col_idade INTEGER, '
