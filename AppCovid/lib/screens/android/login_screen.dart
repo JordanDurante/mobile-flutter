@@ -12,7 +12,6 @@ class Login extends StatelessWidget {
         title: Text('Tela de Login'),
       ),
       body: Container(
-        color: Colors.blue,
         padding: EdgeInsets.symmetric(vertical: 25.0),
         width: double.infinity,
         child: ElevatedButton(
@@ -22,7 +21,7 @@ class Login extends StatelessWidget {
             ));
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green,
+            backgroundColor: Colors.blue,
             padding: EdgeInsets.all(20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30.0),
