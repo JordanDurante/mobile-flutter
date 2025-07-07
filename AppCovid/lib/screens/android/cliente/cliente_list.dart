@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/database/cliente_dao.dart';
 import 'package:flutter_application_1/model/cliente.dart';

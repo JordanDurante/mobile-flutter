@@ -1,5 +1,3 @@
-import 'dart:ffi';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_application_1/database/openDataBaseDB.dart';
 import 'package:flutter_application_1/model/cliente.dart';
 import 'package:sqflite/sqflite.dart';
